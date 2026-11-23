@@ -1,26 +1,24 @@
-@import "tailwindcss";
+/* Tailwind v4 without its preflight: the tasteskill kit (public/assets/system.css)
+   owns the base styles, grid, type and buttons. Utilities carry the tw: prefix (tw:flex),
+   because the kit has classes of its own named like utilities (start-7, grid, fill), and read
+   the kit's tokens through the theme below. Page CSS lives in public/site.css,
+   linked after the kit so the order is fixed. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw);
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Tailwind reads only the source folders, never build output or the checker's browser profile */
+@source not "../.taste-skill";
+@source not "../out";
+@source not "../shots";
+@source not "../public";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-obsidian: #111111;
+  --color-paper: #ffffff;
+  --color-concrete: #e5e5e5;
+  --color-mist: #f5f5f5;
+  --color-steel: #686869;
+  --font-sans: var(--font-montserrat), system-ui, sans-serif;
+  --font-serif: var(--font-cinzel), "Times New Roman", serif;
 }

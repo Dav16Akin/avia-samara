@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tasteskill checks and static export
+/.taste-skill/
+/shots/
+
+# raw client video (28 MB); the encoded copies live in public/media/video
+/media-src/video/

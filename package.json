@@ -6,12 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "images": "node scripts/optimize-images.mjs",
+    "video": "swift scripts/encode-video.swift media-src/video/brand-film.mp4 public/media/video/hero-loop.mp4 h264 720 1280 1300 0 10.85-11.6,30.58-31.54,57.76-59.34,36.06-36.97,11.66-12.6,34.9-36.0,86.66-88.07,16.5-17.37,104.13-105.5 && swift scripts/encode-video.swift media-src/video/brand-film.mp4 public/media/video/hero-loop-hevc.mp4 hevc 720 1280 850 0 10.85-11.6,30.58-31.54,57.76-59.34,36.06-36.97,11.66-12.6,34.9-36.0,86.66-88.07,16.5-17.37,104.13-105.5"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "clsx": "^2.1.1",
+    "motion": "^14.14.0",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",

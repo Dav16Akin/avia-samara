@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Avia Samara
 
-## Getting Started
+Online shop for Avia Samara, African menswear in six collections (Royalty, Urban, Bespoke, Signature, Ceremonial, Avant-Garde).
 
-First, run the development server:
+Next.js 16 (static export), React 19, Tailwind v4 (utilities prefixed `tw:`), `motion`, Phosphor icons, and the tasteskill kit in `public/assets`.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # static site in out/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things are
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| What | Where |
+|---|---|
+| Collections, products, prices, photo ids | `lib/catalog.ts` |
+| Shopping bag (kept in the browser) | `lib/bag.ts` |
+| Home page | `app/page.tsx` |
+| Shop, collection, product, bag, checkout, fitting pages | `app/*/page.tsx` |
+| Nav and footer | `components/SiteNav.tsx`, `components/SiteFooter.tsx` |
+| Page CSS (on top of the kit) | `public/site.css` |
+| Colour and type tokens (from the client's design.md) | `app/layout.tsx` |
+| Photographs | `public/images` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Still stand-ins
 
-## Learn More
+- **Products, names and prices** in `lib/catalog.ts` are demo data. Replace with the client's real pieces.
+- **Photographs** are free-licence Pexels photographs (`/credits/` lists them). Replace with the client's lookbook.
+- **Checkout, fitting and newsletter forms** post to `mailto:` addresses on `aviasamara.example`. Set each form's `data-endpoint` (or wire a payment provider such as Paystack) when the backend exists.
+- Remove `output: "export"` in `next.config.ts` once the shop needs a server.
 
-To learn more about Next.js, take a look at the following resources:
+## Notes for developers
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Links are plain `<a>` and images plain `<img>` on purpose: every page is a full load so the kit's scripts start fresh. ESLint is configured for this.
+- The kit owns classes such as `grid`, `start-7` and `fill`. Tailwind utilities therefore carry the `tw:` prefix (`tw:flex`).
+- Home page checks: `node ~/.claude/skills/design-taste-frontend/scripts/gate.mjs --start out/index.html --root out --kind product --category "African menswear: agbadas, caftans, suits and streetwear" --primary "Shop the collections"`, then `gate.mjs out/index.html` after a build. Keep the checker's Chrome profile outside the project (`$TMPDIR`), or the build tries to read it.
