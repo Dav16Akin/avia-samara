@@ -28,10 +28,29 @@ export default function KitScripts() {
     });
   }, []);
 
+  // back to the home page through the logo or a home link (from any other page): the opening screen
+  // plays again on arrival (layout.tsx reads the flag before the first paint)
+  useEffect(() => {
+    if (window.location.pathname === "/") return;
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.("a[href]");
+      if (!a || a.getAttribute("target") === "_blank") return;
+      const url = new URL((a as HTMLAnchorElement).href, window.location.href);
+      if (url.origin !== window.location.origin || url.pathname !== "/" || url.hash) return;
+      try {
+        sessionStorage.setItem("as-splash-home", "1");
+      } catch {}
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   useEffect(() => {
     const paint = () =>
       document.querySelectorAll("[data-bag-count]").forEach((el) => {
         el.textContent = String(count);
+        el.toggleAttribute("hidden", count === 0);
       });
     paint();
     const t = window.setTimeout(paint, 1200);

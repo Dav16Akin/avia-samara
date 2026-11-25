@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import SiteNav from "@/components/SiteNav";
-import SiteFooter, { Arrow } from "@/components/SiteFooter";
+import SiteFooter from "@/components/SiteFooter";
 import Pic from "@/components/Pic";
+import ProductTile from "@/components/ProductTile";
+import JsonLd from "@/components/JsonLd";
+import Lookbook from "@/components/Lookbook";
+import FilmBand from "@/components/FilmBand";
 import { HeroFilm, FilmButton, FilmDialog } from "@/components/HeroFilm";
-import { collections, products, collectionOf, fromPrice, img, naira } from "@/lib/catalog";
+import { collections, products, type Photo } from "@/lib/catalog";
+import { storesLd } from "@/lib/site";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /* type: product (site-kind other)
    deal: hero split with the client's film (was product), nav nav-mega, close close-type, footer footer-dark,
@@ -10,59 +18,83 @@ import { collections, products, collectionOf, fromPrice, img, naira } from "@/li
    palette: the client's design.md, monochrome #111111 on #ffffff with no accent, through start.mjs brand;
             type: the brand's own, Cinzel (logo tagline, monogram) and Montserrat (wordmark, shop sign)
    moments: picture-develops on the store band's photograph; pinned-chapters in the bespoke section
-   plan: hero 1 (the store film full bleed: a three-column cut on wide screens, the portrait cut on phones) · collections 2 (the client's photographs) · new 1 (peek-list) ·
-         store 1 (dark band: the Lagos store, stills from the film) · bespoke 2 (use: the fitting) · footer.closing 1
-   client media: every Pic and the film come from media-src/ through `npm run images` and
-   scripts/encode-video.swift; the products in "New in the shop" are still stand-ins (lib/catalog.ts). */
+   plan: hero 1 (the store film full bleed under a clear header) · collections (an editorial wall, names over the photographs) ·
+         lookbook (pinned: the scroll walks a rail of all the looks) · film (the TV cut opening to full bleed) ·
+         pieces (four category cards) · new (four product cards, no prices on the home page) ·
+         store 1 (dark band: the Lagos store, stills from the film) · bespoke 2 (use: the fitting) · footer (one band, the same on every page)
+   client media: every Pic and the films come from media-src/ through `npm run images` and
+   scripts/encode-video.swift; the pieces are the client's lookbook (lib/catalog.ts). Hovering any card
+   shows a second view of the same piece. */
 
-const tileRows = [collections.slice(0, 3), collections.slice(3)];
-const arrivals = products.filter((p) => p.isNew);
+// the bespoke steps' pinned frame is half the page wide on a desktop (up to about 640 px, 1280 at 2x)
+const BESPOKE_SIZES = "(max-width: 1023px) 100vw, 50vw";
 
-function CollectionTiles({ row }: { row: typeof collections }) {
+/* The collections as an editorial wall: each a tall photograph with its name set over it, centred,
+   on a shade that keeps the white words readable on any frame; a second piece from the collection
+   fades in under the pointer. No price on the home page. */
+function CollectionWall() {
   return (
-    <div className="grid">
-      {row.map((c, i) => (
-        <a className="tile span-4" href={`/collections/${c.slug}/`} key={c.slug}>
-          <div className="tile__media">
-            {c.media ? (
-              <Pic
-                name={c.media.name}
-                alt={c.media.alt}
-                sizes={i === 2 ? "(max-width: 639px) 100vw, 410px" : "(max-width: 639px) 50vw, 410px"}
-                style={{ objectPosition: c.media.focus }}
-                data-subject="product"
-              />
-            ) : (
-              <img
-                src={img(c.photo)}
-                srcSet={`${img(c.photo, 320)} 320w, ${img(c.photo)} 640w, ${img(c.photo, 1280)} 1280w`}
-                sizes={i === 2 ? "(max-width: 639px) 100vw, 410px" : "(max-width: 639px) 50vw, 410px"}
-                alt={products.find((p) => p.photo === c.photo)?.alt ?? c.name}
-                width={640}
-                height={800}
-                loading="lazy"
-                decoding="async"
-                style={{ objectPosition: c.focus }}
-                data-source="stand-in"
-                data-subject="product"
-              />
-            )}
-          </div>
-          <div className="tile__head">
-            <h3>{c.name}</h3>
-            <span className="tile__price" data-assumed>from {naira(fromPrice(c.slug))}</span>
-          </div>
-          <p className="tile__facts">{c.short}</p>
+    <div className="wall">
+      {collections.map((c, i) => (
+        <a className="wall__tile has-alt" href={`/collections/${c.slug}/`} key={c.slug} data-reveal="" style={{ ["--i" as string]: i % 3 }}>
+          <Pic
+            name={c.media.name}
+            alt={c.media.alt}
+            sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 420px"
+            priority={i < 3}
+            style={{ objectPosition: c.media.focus }}
+            data-subject="product"
+          />
+          <Pic className="wall__alt" name={c.hover.name} alt="" sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 420px" style={{ objectPosition: c.hover.focus }} />
+          <span className="wall__label">
+            <span className="wall__no">{c.group}</span>
+            <span className="wall__name">{c.name}</span>
+            <span className="wall__short">{c.short}</span>
+          </span>
         </a>
       ))}
     </div>
   );
 }
 
+/* Shop by piece: four doors into the shop, a photograph (a second on hover) and one word under it */
+const pieces: { label: string; href: string; a: Photo; b: Photo }[] = [
+  {
+    label: "Agbadas",
+    href: "/collections/royalty/",
+    a: { name: "look-black-brocade-trim-agbada-2", alt: "A man in a black agbada with the sleeves held open to show the brocade lining", focus: "50% 30%" },
+    b: { name: "look-royal-blue-agbada-2", alt: "", focus: "50% 30%" },
+  },
+  {
+    label: "Caftans",
+    href: "/collections/signature/",
+    a: { name: "look-black-brocade-panel-caftan-2", alt: "A man in a long black caftan with a brocade panel falling to the hem", focus: "50% 30%" },
+    b: { name: "look-cream-jacquard-set-1", alt: "", focus: "50% 30%" },
+  },
+  {
+    label: "Streetwear",
+    href: "/collections/urban/",
+    a: { name: "look-embroidered-denim-set-3", alt: "A man in an embroidered denim set, one knee raised", focus: "50% 30%" },
+    b: { name: "look-burgundy-print-set-1", alt: "", focus: "50% 30%" },
+  },
+  {
+    label: "Statement pieces",
+    href: "/collections/avant-garde/",
+    a: { name: "look-green-web-stitch-set-3", alt: "The back of a green shirt-jacket stitched with a full spider web", focus: "50% 30%" },
+    b: { name: "look-navy-monogram-set-2", alt: "", focus: "50% 35%" },
+  },
+];
+
+const arrivals = products.filter((p) => p.isNew).slice(0, 4);
+// the lookbook shows eight looks, one of each kind, so the rail is a short walk
+const LOOKBOOK = ["royal-blue-agbada", "navy-monogram-set", "floral-grand-agbada", "embroidered-denim-set", "red-fringe-tunic-set", "cream-wrap-jacket-set", "gold-brocade-wrapper-set", "green-web-stitch-set"];
+const looks = LOOKBOOK.map((slug) => products.find((p) => p.slug === slug)!).map((p) => ({ slug: p.slug, name: p.name, photos: p.photos.slice(0, 2) }));
+
 export default function Home() {
   return (
     <>
-      <SiteNav />
+      <SiteNav overlay />
+      <JsonLd data={storesLd()} />
       <main id="top">
         <section className="hero hero--stage ground-inverse" data-enter="" aria-labelledby="hero-h">
           {/* CLIENT FILE film: media-src/video/brand-film.mp4 (720x1280, the 1:56 store film), cut and
@@ -73,15 +105,14 @@ export default function Home() {
           <HeroFilm />
           <div className="wrap">
             <div className="hero-text stage__copy">
-              <p className="hero__kicker">Men&rsquo;s boutique &amp; luxury store, Lagos</p>
+              <p className="hero__kicker">Men&rsquo;s boutique &amp; luxury store, Lagos &amp; Benin City</p>
               <h1 id="hero-h">Be born of change and wear in style</h1>
               <p className="t-lead">
                 Agbadas, caftans, suits and streetwear designed by Avia Samara, every piece fitted to you at the Lagos store.
               </p>
               <div className="stage__actions">
                 <div className="btn-row">
-                  <a className="btn btn--primary" href="/shop/">Shop the collection<Arrow /></a>
-                  <a className="btn btn--secondary" href="/bespoke/">Book a fitting</a>
+                  <a className="btn btn--primary" href="/bespoke/">Book a fitting</a>
                 </div>
                 <FilmButton />
               </div>
@@ -89,54 +120,44 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section g2 g2m" id="collections" aria-labelledby="collections-h">
+        <section className="section gallery" id="collections" aria-labelledby="collections-h">
           <div className="wrap">
-            <div className="group">
-              <div className="section-head">
-                <h2 id="collections-h">The Samara collections</h2>
-              </div>
-              <CollectionTiles row={tileRows[0]} />
-            </div>
-            <CollectionTiles row={tileRows[1]} />
+            <p className="eyebrow eyebrow--center">Six collections, one house</p>
+            <h2 className="gallery__title" id="collections-h">Choose a collection</h2>
+            <CollectionWall />
           </div>
         </section>
 
-        <section className="section" id="new" aria-labelledby="new-h">
+        <Lookbook looks={looks} />
+
+        <FilmBand />
+
+        <section className="section gallery" id="pieces" aria-labelledby="pieces-h">
           <div className="wrap">
-            <div className="section-head">
-              <h2 id="new-h">New in the shop</h2>
+            <h2 className="gallery__title" id="pieces-h">Shop by piece</h2>
+            <div className="cards">
+              {pieces.map((x, i) => (
+                <a className="card-cat" href={x.href} key={x.label} data-reveal="" style={{ ["--i" as string]: i }}>
+                  <span className="card-cat__media has-alt">
+                    <Pic name={x.a.name} alt={x.a.alt} sizes="(max-width: 639px) 50vw, 310px" style={{ objectPosition: x.a.focus }} data-subject="product" />
+                    <Pic className="card-cat__alt" name={x.b.name} alt="" sizes="(max-width: 639px) 50vw, 310px" style={{ objectPosition: x.b.focus }} />
+                  </span>
+                  <span className="card-cat__label">{x.label}</span>
+                </a>
+              ))}
             </div>
-            <div className="grid grid--top fill" data-peek="">
-              <ul className="rows span-6">
-                {arrivals.map((p) => (
-                  <li data-peek-to={p.slug} tabIndex={0} key={p.slug}>
-                    <a className="rows__name" href={`/products/${p.slug}/`}>{p.name}</a>
-                    <p>{collectionOf(p.collection).name}</p>
-                    <span className="rows__value" data-assumed>{naira(p.price)}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="frame frame--photo frame--fill span-6 start-7">
-                {arrivals.map((p, i) => (
-                  <img
-                    className="frame__img"
-                    data-peek-for={p.slug}
-                    src={img(p.photo, 1280)}
-                    srcSet={`${img(p.photo)} 640w, ${img(p.photo, 1280)} 1280w`}
-                    sizes="(max-width: 1023px) 100vw, 628px"
-                    alt={p.alt}
-                    width={1280}
-                    height={1600}
-                    loading="lazy"
-                    style={{ objectPosition: p.focus }}
-                    hidden={i > 0}
-                    data-source="stand-in"
-                    data-subject={i === 0 ? "product" : "people"}
-                    key={p.slug}
-                  />
-                ))}
-              </div>
+          </div>
+        </section>
+
+        <section className="section gallery" id="new" aria-labelledby="new-h">
+          <div className="wrap">
+            <h2 className="gallery__title" id="new-h">New in the shop</h2>
+            <div className="grid cards--products">
+              {arrivals.map((p) => (
+                <ProductTile p={p} key={p.slug} />
+              ))}
             </div>
+            <p className="gallery__more"><a className="link" href="/shop/">See all pieces</a></p>
           </div>
         </section>
 
@@ -170,21 +191,21 @@ export default function Home() {
                   <h3>1. Book a fitting</h3>
                   <p>Tell us the occasion and the date you need the suit for. We take your measurements at the fitting.</p>
                   <figure className="mo-pc__visual">
-                    <Pic name="film-founder" sizes="(max-width: 639px) 100vw, 628px" alt="Samuel Sentinawa, founder of Avia Samara, at his desk beside a tailored waistcoat on a stand" style={{ objectPosition: "50% 45%" }} data-subject="use" />
+                    <Pic name="look-cream-wrap-jacket-set-2" sizes={BESPOKE_SIZES} alt="A man in a cream wrap jacket and brown hat, the jacket's collar and pin in view" style={{ objectPosition: "50% 25%" }} data-subject="use" />
                   </figure>
                 </li>
                 <li className="mo-pc__step">
                   <h3>2. Choose the cloth and the cut</h3>
                   <p>Pick a cloth from the swatch books, then the cut: two-piece, three-piece or a tailored jacket alone.</p>
                   <figure className="mo-pc__visual">
-                    <Pic name="film-bowtie" sizes="(max-width: 639px) 100vw, 628px" alt="A patterned bow tie and a shawl lapel in dark glitter cloth on a tailor's stand" style={{ objectPosition: "50% 45%" }} data-subject="parts" />
+                    <Pic name="look-navy-monogram-set-2" sizes={BESPOKE_SIZES} alt="The back of a navy jacket with the AS monogram embroidered in red beads" style={{ objectPosition: "50% 35%" }} data-subject="parts" />
                   </figure>
                 </li>
                 <li className="mo-pc__step">
                   <h3>3. Collect the finished suit</h3>
                   <p>The suit is cut and sewn to your measurements, then checked on you before it leaves.</p>
                   <figure className="mo-pc__visual">
-                    <Pic name="film-hanger" sizes="(max-width: 639px) 100vw, 628px" alt="A finished grey jacket on a white Avia Samara hanger with a copper hook" style={{ objectPosition: "50% 40%" }} data-subject="use" />
+                    <Pic name="look-pink-quilted-jacket-set-1" sizes={BESPOKE_SIZES} alt="A finished look: a pale pink quilted jacket over a burgundy top and flared trousers" style={{ objectPosition: "50% 30%" }} data-subject="use" />
                   </figure>
                 </li>
               </ol>
@@ -194,25 +215,8 @@ export default function Home() {
         </section>
       </main>
 
-      <SiteFooter
-        phoneTwo
-        close={
-          <div className="closing__cta close--type">
-            <div className="section-head">
-              <h2 id="close-h">Every piece fitted to you in Lagos</h2>
-              <p className="t-small muted">Order online, and we take your measurements at the store.</p>
-            </div>
-            <a className="btn btn--primary btn--xl" href="/shop/">
-              Shop the collection
-              <Arrow />
-            </a>
-          </div>
-        }
-      />
+      <SiteFooter />
       <FilmDialog />
-      <nav className="actionbar" aria-label="Quick actions">
-        <a className="btn btn--primary" href="/shop/">Shop the collection</a>
-      </nav>
     </>
   );
 }

@@ -4,6 +4,7 @@
 // on the static export. Swap for a server cart when the backend arrives.
 
 import { useSyncExternalStore } from "react";
+import { productBySlug } from "@/lib/catalog";
 
 export type BagLine = { slug: string; size: string; qty: number };
 // every piece is fitted to its wearer; the line keeps a size field for orders made before that
@@ -28,7 +29,9 @@ function read(): BagLine[] {
   cacheRaw = raw;
   try {
     const parsed = raw ? JSON.parse(raw) : [];
-    cache = Array.isArray(parsed) ? parsed : EMPTY;
+    // a bag saved before the catalogue changed can hold pieces that no longer exist: they are dropped,
+    // so the count on the bag icon always matches what the bag shows
+    cache = Array.isArray(parsed) ? parsed.filter((l: BagLine) => l && productBySlug(l.slug) && l.qty > 0) : EMPTY;
   } catch {
     cache = EMPTY;
   }
@@ -78,3 +81,7 @@ export function clearBag() {
 }
 
 export const countOf = (lines: BagLine[]) => lines.reduce((n, l) => n + l.qty, 0);
+
+// The side cart opens on this event: after an add, and from the bag icon (CartDrawer listens).
+export const CART_OPEN = "avia-cart-open";
+export const openCart = () => window.dispatchEvent(new Event(CART_OPEN));

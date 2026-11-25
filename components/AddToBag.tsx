@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckIcon } from "@phosphor-icons/react";
-import { addToBag, FITTED } from "@/lib/bag";
+import { addToBag, FITTED, openCart } from "@/lib/bag";
 
 // Every Avia Samara piece is fitted to its wearer, so there is no size to pick: the piece goes in
 // the bag and the measurements are taken at a fitting after the order.
@@ -12,8 +12,8 @@ export default function AddToBag({ slug }: { slug: string }) {
 
   return (
     <div className="pdp__buy">
-      <p className="t-small muted">Fitted to you: we take your measurements at the Lagos store or by video call after you order.</p>
-      <button className="btn btn--primary" type="button" onClick={() => { addToBag(slug, FITTED); setAdded(true); }}>
+      <p className="t-small muted">Fitted to you: we take your measurements at our Lagos or Benin City store, or by video call, after you order.</p>
+      <button className="btn btn--buy" type="button" onClick={() => { addToBag(slug, FITTED); setAdded(true); openCart(); }}>
         Add to bag
       </button>
       <p className="pdp__note" role="status">

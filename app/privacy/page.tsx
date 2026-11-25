@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import ShopChrome from "@/components/ShopChrome";
 
 export const metadata: Metadata = {
-  title: "Privacy: Avia Samara",
+  title: "Privacy",
+  alternates: { canonical: "/privacy/" },
   description: "What this site stores about you and why.",
 };
 

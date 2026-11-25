@@ -46,3 +46,6 @@ next-env.d.ts
 
 # raw client video (28 MB); the encoded copies live in public/media/video
 /media-src/video/
+
+# the lookbook originals (the client PICTURES zip, shrunk to 2400px): only their web copies in public/media/img are committed
+/media-src/images/look-*

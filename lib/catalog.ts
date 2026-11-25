@@ -1,9 +1,12 @@
 // Catalogue for the Avia Samara shop.
-// The collections and their descriptions come from the client's brief (more will follow).
-// Every product name, price and photograph below is a STAND-IN for the demo:
-// replace them with the client's real pieces, prices and lookbook photographs.
+// The collections and their descriptions come from the client's brief. The pieces are the client's own
+// lookbook (the PICTURES shoot, media-src/images/look-*): one entry per outfit, every photograph of it.
+// NAMES, PRICES AND COLLECTION PLACEMENTS ARE OURS, NOT THE CLIENT'S: correct them here (prices are
+// marked data-assumed wherever they show).
 
 import type { MediaName } from "@/components/Pic";
+
+export type Photo = { name: MediaName; alt: string; focus?: string };
 
 export type Collection = {
   slug: string;
@@ -11,13 +14,10 @@ export type Collection = {
   name: string;
   short: string; // one grey line, 30 characters at most
   line: string; // the client's own description
-  photo: number; // Pexels photo id of the stand-in
-  focus: string; // object-position for square crops
   group: "Traditional" | "Modern";
   madeToOrder?: boolean;
-  // the client's own photograph for the collection's tile (lib/media.json); the Pexels stand-in
-  // above stays for the pages not yet given one
-  media?: { name: MediaName; alt: string; focus: string };
+  media: Photo; // the collection's picture
+  hover: Photo; // a second piece from it, shown on hover
 };
 
 export type Product = {
@@ -25,13 +25,10 @@ export type Product = {
   name: string;
   collection: string; // collection slug
   price: number; // NGN, assumed
-  photo: number;
-  focus: string;
-  alt: string;
+  photos: Photo[]; // the first is the main picture, the second shows on hover
   detail: string;
   isNew?: boolean;
 };
-
 
 export const collections: Collection[] = [
   {
@@ -40,10 +37,9 @@ export const collections: Collection[] = [
     name: "Samara Royalty",
     short: "Caftans and agbadas",
     line: "Luxury caftans, agbadas and distinguished African traditional wear.",
-    photo: 31485635,
-    focus: "50% 22%",
     group: "Traditional",
-    media: { name: "film-white-agbada", alt: "A man in a white agbada with purple embroidery and a cap, holding a carved staff, in the store's mirrored booth", focus: "50% 30%" },
+    media: { name: "look-royal-blue-agbada-1", alt: "A man in a royal blue agbada over a black embroidered panel, holding a carved staff", focus: "50% 30%" },
+    hover: { name: "look-black-brocade-trim-agbada-1", alt: "A man in a black agbada edged with bronze brocade", focus: "50% 30%" },
   },
   {
     slug: "urban",
@@ -51,10 +47,9 @@ export const collections: Collection[] = [
     name: "Samara Urban",
     short: "Streetwear and shirts",
     line: "Contemporary streetwear, stylish shirts, statement trousers and urban luxury outfits.",
-    photo: 35347257,
-    focus: "50% 30%",
     group: "Modern",
-    media: { name: "red-set-standing", alt: "A man in a red jacket and wide trousers patterned with black scrollwork, gold chains and aviators", focus: "50% 28%" },
+    media: { name: "look-embroidered-denim-set-1", alt: "A man in an embroidered denim jacket and trousers", focus: "50% 30%" },
+    hover: { name: "look-plum-paisley-set-1", alt: "A man in a plum paisley shirt and shorts with sandals", focus: "50% 30%" },
   },
   {
     slug: "bespoke",
@@ -62,11 +57,10 @@ export const collections: Collection[] = [
     name: "Samara Bespoke",
     short: "Custom-made suits",
     line: "Custom-made suits, tailored jackets, three-piece suits and sophisticated formalwear.",
-    photo: 18348433,
-    focus: "50% 18%",
     group: "Modern",
-    media: { name: "film-suit", alt: "A grey patterned suit jacket with black satin lapels over matching trousers on a brass rail", focus: "50% 35%" },
     madeToOrder: true,
+    media: { name: "look-cream-wrap-jacket-set-1", alt: "A man in a cream wrap jacket, brown trousers and a brown hat", focus: "50% 30%" },
+    hover: { name: "look-pink-quilted-jacket-set-2", alt: "A man in a pale pink quilted jacket over a burgundy top and trousers", focus: "50% 30%" },
   },
   {
     slug: "signature",
@@ -74,10 +68,9 @@ export const collections: Collection[] = [
     name: "Samara Signature",
     short: "Designer caftans",
     line: "Exclusive designer caftans, built-in waistcoat designs and unique statement pieces.",
-    photo: 35331756,
-    focus: "50% 20%",
     group: "Traditional",
-    media: { name: "cream-tunic-hat", alt: "A man in a cream tunic with stitched curves and cut-out sleeves, grey wide trousers and a black hat", focus: "50% 25%" },
+    media: { name: "look-black-brocade-panel-caftan-1", alt: "A man in a long black caftan with a bronze brocade panel at the waist", focus: "50% 30%" },
+    hover: { name: "look-black-jacquard-set-1", alt: "A man in a black jacquard top and trousers, leaning on a carved cane", focus: "50% 30%" },
   },
   {
     slug: "ceremonial",
@@ -85,10 +78,9 @@ export const collections: Collection[] = [
     name: "Samara Ceremonial",
     short: "Weddings and engagements",
     line: "Luxury outfits for weddings, engagements, special occasions and celebrations.",
-    photo: 34445229,
-    focus: "50% 25%",
     group: "Traditional",
-    media: { name: "film-window", alt: "Store-window mannequins in a gold brocade top with coral beads and a burgundy hooded robe", focus: "40% 45%" },
+    media: { name: "look-floral-grand-agbada-1", alt: "A man in a black and gold floral grand agbada and beaded crown, holding a tall carved staff", focus: "50% 30%" },
+    hover: { name: "look-gold-brocade-wrapper-set-1", alt: "A man in a gold brocade shirt, a red wrapper and a brown hat, with a carved staff", focus: "50% 30%" },
   },
   {
     slug: "avant-garde",
@@ -96,54 +88,162 @@ export const collections: Collection[] = [
     name: "Samara Avant-Garde",
     short: "Experimental menswear",
     line: "Experimental fashion, unconventional silhouettes, deconstructed designs and bold creative menswear.",
-    photo: 6109439,
-    focus: "50% 45%",
     group: "Modern",
-    media: { name: "pinstripe-mannequin", alt: "A gold-headed mannequin in an asymmetric black pinstripe jacket and trousers traced with white outlines", focus: "50% 30%" },
+    media: { name: "look-red-fringe-tunic-set-1", alt: "A man in a red and black tunic and trousers cut into layers of fringe", focus: "50% 30%" },
+    hover: { name: "look-green-web-stitch-set-2", alt: "A man in a green shirt-jacket stitched with a web pattern, leaning on a chair", focus: "50% 30%" },
   },
 ];
 
+const v = (name: MediaName, alt: string, focus = "50% 30%"): Photo => ({ name, alt, focus });
+
 export const products: Product[] = [
   // 01 Royalty
-  { slug: "burgundy-embroidered-agbada", name: "Burgundy embroidered agbada", collection: "royalty", price: 285000, photo: 31485635, focus: "50% 25%", alt: "A man in a burgundy agbada with gold embroidery on the chest and a matching cap", detail: "Three-piece agbada with an embroidered chest panel, inner caftan and trousers." },
-  { slug: "sky-blue-agbada-set", name: "Sky blue agbada set", collection: "royalty", price: 310000, photo: 8526759, focus: "50% 30%", alt: "A man in a sky blue agbada with cream embroidery down the front", detail: "Three-piece agbada with cream embroidery down the front and at the cuffs.", isNew: true },
-  { slug: "royal-blue-agbada", name: "Royal blue agbada", collection: "royalty", price: 265000, photo: 30452332, focus: "50% 35%", alt: "A man in a royal blue agbada with white embroidery, standing against a dark wall", detail: "Wide-sleeved agbada with white embroidery, worn over a matching caftan." },
-  { slug: "pale-blue-grand-agbada", name: "Pale blue grand agbada", collection: "royalty", price: 340000, photo: 35100572, focus: "50% 30%", alt: "A man in a pale blue grand agbada with tonal embroidery and a matching cap", detail: "Full-cut grand agbada with tonal embroidery across the chest." },
+  {
+    slug: "royal-blue-agbada", name: "Royal blue and black agbada", collection: "royalty", price: 420000, isNew: true,
+    detail: "A royal blue agbada worn open over a long black caftan embroidered with a raised geometric panel, with matching trousers.",
+    photos: [
+      v("look-royal-blue-agbada-1", "A man in a royal blue agbada over a black embroidered panel, holding a carved staff"),
+      v("look-royal-blue-agbada-2", "The royal blue agbada from the side, the black panel's raised embroidery in view"),
+    ],
+  },
+  {
+    slug: "black-brocade-trim-agbada", name: "Black agbada with brocade trim", collection: "royalty", price: 385000,
+    detail: "A flowing black agbada edged in bronze brocade, over a matching caftan with a brocade panel and wide sleeves.",
+    photos: [
+      v("look-black-brocade-trim-agbada-1", "A man in a black agbada edged with bronze brocade, hands clasped"),
+      v("look-black-brocade-trim-agbada-2", "The black agbada with the sleeves held open to show the brocade lining"),
+      v("look-black-brocade-trim-agbada-3", "A closer view of the brocade trim and the caftan's panel", "50% 25%"),
+      v("look-black-brocade-trim-agbada-4", "The black agbada from the back, a wide brocade band down the centre"),
+    ],
+  },
   // 02 Urban
-  { slug: "green-camp-shirt-and-shorts", name: "Green camp shirt and shorts", collection: "urban", price: 68000, photo: 35347257, focus: "50% 35%", alt: "A man in a dark green camp shirt, long shorts and a bucket hat", detail: "Boxy camp-collar shirt with matching long shorts." },
-  { slug: "checked-overshirt", name: "Checked overshirt", collection: "urban", price: 54000, photo: 16637480, focus: "50% 30%", alt: "A man in a navy and white checked overshirt and black trousers, seen from the side", detail: "Heavy checked overshirt with a straight hem and two chest pockets.", isNew: true },
-  { slug: "washed-denim-jacket", name: "Washed denim jacket", collection: "urban", price: 72000, photo: 11434887, focus: "50% 35%", alt: "A man in a washed denim jacket, white T-shirt and slim trousers on a city street", detail: "Mid-wash denim jacket cut close through the shoulder." },
-  { slug: "blue-printed-sweatshirt", name: "Blue printed sweatshirt", collection: "urban", price: 46000, photo: 29977116, focus: "50% 40%", alt: "A man crouching in a blue printed sweatshirt, grey trousers and a white cap", detail: "Loop-back cotton sweatshirt with a tonal print across the chest." },
+  {
+    slug: "embroidered-denim-set", name: "Embroidered denim set", collection: "urban", price: 145000, isNew: true,
+    detail: "A cropped denim jacket with tonal stitching and embroidered flowers, over wide patched denim trousers.",
+    photos: [
+      v("look-embroidered-denim-set-1", "A man in an embroidered denim jacket and trousers, one hand on his hip"),
+      v("look-embroidered-denim-set-2", "The denim set full length, worn with black and white boots"),
+      v("look-embroidered-denim-set-3", "The denim set in motion, one knee raised"),
+      v("look-embroidered-denim-set-4", "The denim set from the side, leaning back"),
+    ],
+  },
+  {
+    slug: "burgundy-print-set", name: "Burgundy print shirt and trousers", collection: "urban", price: 98000,
+    detail: "A short-sleeved shirt and straight trousers in a burgundy print, with a contrast black placket.",
+    photos: [v("look-burgundy-print-set-1", "A man in a burgundy print short-sleeved shirt and matching trousers")],
+  },
+  {
+    slug: "plum-paisley-set", name: "Plum paisley shirt and shorts", collection: "urban", price: 86000,
+    detail: "A long-sleeved plum shirt in a raised paisley weave with matching long shorts.",
+    photos: [v("look-plum-paisley-set-1", "A man in a plum paisley shirt and shorts with sandals, arms crossed")],
+  },
+  {
+    slug: "plum-geometric-set", name: "Plum geometric print shirt", collection: "urban", price: 92000,
+    detail: "A wide-cut shirt in a plum and pink geometric weave, worn with matching trousers.",
+    photos: [v("look-plum-geometric-set-1", "A man in a plum geometric print shirt, hands together", "50% 25%")],
+  },
   // 03 Bespoke (made to order)
-  { slug: "pinstripe-three-piece-suit", name: "Pinstripe three-piece suit", collection: "bespoke", price: 420000, photo: 18348433, focus: "50% 22%", alt: "A man in a dark pinstripe three-piece suit with the jacket over one shoulder", detail: "Jacket, waistcoat and trousers in dark pinstripe cloth, cut to your measurements." },
-  { slug: "black-two-piece-suit", name: "Black two-piece suit", collection: "bespoke", price: 360000, photo: 19934394, focus: "50% 25%", alt: "A man in a slim black two-piece suit with a white shirt and black tie", detail: "Single-breasted jacket and flat-front trousers in black suiting." },
-  { slug: "black-pinstripe-lounge-suit", name: "Black pinstripe lounge suit", collection: "bespoke", price: 395000, photo: 6766363, focus: "50% 30%", alt: "A man seated in a black pinstripe suit and white band-collar shirt", detail: "Soft-shouldered lounge suit with a matching waistcoat." },
-  { slug: "black-evening-jacket-and-trousers", name: "Black evening jacket and trousers", collection: "bespoke", price: 380000, photo: 10528698, focus: "50% 25%", alt: "A man in a black tailored jacket, roll-neck and trousers with a wide-brimmed hat", detail: "Evening jacket with a peak lapel and tapered trousers.", isNew: true },
+  {
+    slug: "cream-wrap-jacket-set", name: "Cream wrap jacket and brown trousers", collection: "bespoke", price: 260000, isNew: true,
+    detail: "A cropped cream wrap jacket with wide sleeves and a single button, over high-waisted brown trousers. Cut to your measurements.",
+    photos: [
+      v("look-cream-wrap-jacket-set-1", "A man in a cream wrap jacket, brown trousers and a brown hat"),
+      v("look-cream-wrap-jacket-set-2", "A closer view of the cream wrap jacket's collar and pin", "50% 25%"),
+      v("look-cream-wrap-jacket-set-3", "The cream wrap jacket with arms raised, the wide sleeves open"),
+      v("look-cream-wrap-jacket-set-4", "The cream jacket and brown trousers mid-stride"),
+      v("look-cream-wrap-jacket-set-5", "The cream jacket and brown trousers, standing square"),
+    ],
+  },
+  {
+    slug: "pink-quilted-jacket-set", name: "Pink quilted jacket and burgundy set", collection: "bespoke", price: 285000,
+    detail: "A pale pink jacket with quilted sleeves and back, over a sleeveless burgundy zip top and flared trousers. Cut to your measurements.",
+    photos: [
+      v("look-pink-quilted-jacket-set-1", "A man in a pale pink quilted jacket over a burgundy top and flared trousers"),
+      v("look-pink-quilted-jacket-set-2", "A closer view of the pink jacket's quilting and buttons", "50% 25%"),
+      v("look-pink-quilted-jacket-set-3", "The burgundy top with the pink jacket over one shoulder"),
+      v("look-pink-quilted-jacket-set-4", "The sleeveless burgundy top and flared trousers alone"),
+    ],
+  },
   // 04 Signature
-  { slug: "cream-embroidered-caftan", name: "Cream embroidered caftan", collection: "signature", price: 165000, photo: 19583851, focus: "50% 25%", alt: "A man seated in a cream caftan with dark embroidery on the placket and a patterned cap", detail: "Long caftan with an embroidered placket and matching trousers.", isNew: true },
-  { slug: "mint-caftan", name: "Mint caftan", collection: "signature", price: 148000, photo: 35331756, focus: "50% 25%", alt: "A man in a pale mint caftan with a chest pocket and an embroidered cap", detail: "Knee-length caftan with a concealed placket and one chest pocket." },
-  { slug: "white-caftan-set", name: "White caftan set", collection: "signature", price: 156000, photo: 33356780, focus: "50% 30%", alt: "A man in a white caftan set and black cap against a red wall", detail: "Two-piece caftan set with a stand collar and cropped trousers." },
-  { slug: "rust-long-caftan", name: "Rust long caftan", collection: "signature", price: 172000, photo: 29133967, focus: "50% 40%", alt: "A man in an ankle-length rust caftan seen from behind", detail: "Ankle-length caftan in rust cloth with side slits." },
+  {
+    slug: "black-brocade-panel-caftan", name: "Black caftan with brocade panel", collection: "signature", price: 210000,
+    detail: "A long black caftan with a built-in brocade panel wrapped at the waist and a stand collar.",
+    photos: [
+      v("look-black-brocade-panel-caftan-1", "A man in a long black caftan with a bronze brocade panel at the waist"),
+      v("look-black-brocade-panel-caftan-2", "The black caftan from the side, the brocade panel falling to the hem"),
+    ],
+  },
+  {
+    slug: "black-jacquard-set", name: "Black jacquard top and trousers", collection: "signature", price: 175000,
+    detail: "A wide-sleeved top in black jacquard with a pointed yoke and banded sleeves, with straight black trousers.",
+    photos: [
+      v("look-black-jacquard-set-1", "A man in a black jacquard top and trousers, leaning on a carved cane"),
+      v("look-black-jacquard-set-2", "A closer view of the black jacquard top's yoke and banded sleeves", "50% 25%"),
+    ],
+  },
+  {
+    slug: "cream-jacquard-set", name: "Cream jacquard top and trousers", collection: "signature", price: 165000,
+    detail: "A boxy cream jacquard top with short wide sleeves and matching wide trousers.",
+    photos: [v("look-cream-jacquard-set-1", "A man in a cream jacquard top and wide trousers")],
+  },
   // 05 Ceremonial
-  { slug: "navy-corded-agbada", name: "Navy corded agbada", collection: "ceremonial", price: 375000, photo: 6109557, focus: "50% 30%", alt: "A man in a navy jacquard agbada with white corded embroidery and a woven cap", detail: "Jacquard agbada with white corded embroidery at the neck." },
-  { slug: "white-embroidered-agbada", name: "White embroidered agbada", collection: "ceremonial", price: 390000, photo: 34445229, focus: "50% 28%", alt: "A man in a white agbada with red and gold embroidery, holding a leather clutch", detail: "White agbada with red and gold embroidery on the chest." },
-  { slug: "cream-agbada-set", name: "Cream agbada set", collection: "ceremonial", price: 355000, photo: 30075301, focus: "50% 35%", alt: "A man seated in a cream agbada set with a matching cap", detail: "Three-piece agbada set in cream with matching cap." },
-  { slug: "striped-woven-agbada", name: "Striped woven agbada", collection: "ceremonial", price: 410000, photo: 7122397, focus: "50% 60%", alt: "Two men in woven striped agbadas, one cream and one blue, standing in a field at dusk", detail: "Hand-woven striped agbada with appliqué knots, in cream or blue." },
+  {
+    slug: "floral-grand-agbada", name: "Black and gold floral grand agbada", collection: "ceremonial", price: 520000, isNew: true,
+    detail: "A full grand agbada in black and gold floral cloth, worn with a beaded crown for the biggest days.",
+    photos: [
+      v("look-floral-grand-agbada-1", "A man in a black and gold floral grand agbada and beaded crown, holding a tall carved staff"),
+      v("look-floral-grand-agbada-2", "The floral grand agbada seated, the cloth spread across the floor"),
+      v("look-floral-grand-agbada-3", "The floral grand agbada seated on a sofa between red cushions", "50% 40%"),
+    ],
+  },
+  {
+    slug: "gold-brocade-wrapper-set", name: "Gold brocade shirt and red wrapper", collection: "ceremonial", price: 460000,
+    detail: "A long gold brocade shirt with a carved front panel, worn over a red jacquard wrapper.",
+    photos: [
+      v("look-gold-brocade-wrapper-set-1", "A man in a gold brocade shirt, a red wrapper and a brown hat, with a carved staff"),
+      v("look-gold-brocade-wrapper-set-2", "A closer view of the gold brocade shirt's front panel, seated", "50% 25%"),
+      v("look-gold-brocade-wrapper-set-3", "The gold brocade shirt and red wrapper from the back"),
+    ],
+  },
   // 06 Avant-Garde
-  { slug: "black-draped-robe", name: "Black draped robe", collection: "avant-garde", price: 198000, photo: 6109439, focus: "50% 45%", alt: "A man in a black draped robe over a white shirt, holding a yellow frame", detail: "Open draped robe worn over a long white shirt." },
-  { slug: "open-blazer-and-check-trousers", name: "Open blazer and check trousers", collection: "avant-garde", price: 215000, photo: 14965554, focus: "50% 30%", alt: "A man in an open navy blazer and check trousers, wearing sunglasses", detail: "Unlined blazer cut to wear open, with high-waisted check trousers." },
-  { slug: "patchwork-trousers-and-vest", name: "Patchwork trousers and vest", collection: "avant-garde", price: 124000, photo: 16864839, focus: "50% 45%", alt: "A man crouching in patchwork woven trousers and a white vest against a rust wall", detail: "Trousers pieced from four woven cloths, with a ribbed vest." },
-  { slug: "leather-jacket-set", name: "Leather jacket set", collection: "avant-garde", price: 268000, photo: 35587808, focus: "50% 35%", alt: "Two men in black leather jackets, photographed in black and white", detail: "Boxy leather jacket with matching wide trousers." },
+  {
+    slug: "red-fringe-tunic-set", name: "Red fringe tunic and trousers", collection: "avant-garde", price: 240000,
+    detail: "A red and black jacquard tunic and trousers cut into tiers of hanging fringe.",
+    photos: [
+      v("look-red-fringe-tunic-set-1", "A man in a red and black tunic and trousers cut into layers of fringe"),
+      v("look-red-fringe-tunic-set-2", "A closer view of the red fringe tunic", "50% 25%"),
+      v("look-red-fringe-tunic-set-3", "The red fringe tunic and trousers from the side, mid-step"),
+    ],
+  },
+  {
+    slug: "green-web-stitch-set", name: "Green web-stitch shirt and trousers", collection: "avant-garde", price: 198000,
+    detail: "A boxy green shirt-jacket stitched with a spider-web pattern front and back, with pleated green trousers.",
+    photos: [
+      v("look-green-web-stitch-set-1", "A man in a green web-stitched shirt-jacket and trousers"),
+      v("look-green-web-stitch-set-2", "The green shirt-jacket, leaning on a chair, the web stitching across the chest"),
+      v("look-green-web-stitch-set-3", "The green shirt-jacket from the back, a full web stitched across it"),
+      v("look-green-web-stitch-set-4", "The green set in a wide stance, one arm out"),
+    ],
+  },
+  {
+    slug: "navy-monogram-set", name: "Navy AS monogram jacket and trousers", collection: "avant-garde", price: 310000,
+    detail: "A navy wrap jacket with the AS monogram embroidered in red beads across the back, over wide navy trousers.",
+    photos: [
+      v("look-navy-monogram-set-1", "A man in a navy wrap jacket and wide trousers with a red hat"),
+      v("look-navy-monogram-set-2", "The navy jacket from the back, the AS monogram in red beads", "50% 35%"),
+      v("look-navy-monogram-set-3", "The navy set from the back, full length"),
+      v("look-navy-monogram-set-4", "The navy set, one arm raised"),
+      v("look-navy-monogram-set-5", "The navy set leaning on a bar stool"),
+    ],
+  },
 ];
 
 export const naira = (n: number) => "₦" + n.toLocaleString("en-NG");
 
-export const img = (id: number, w: 320 | 640 | 1280 | 1920 = 640) => `/images/p-${id}-${w}.jpg`;
+/* A photograph's address: the 640 JPEG (share cards, structured data, anything that wants one file)
+   or a WebP width from the pipeline. */
+export const photoUrl = (name: MediaName, w?: 320 | 640 | 1280 | 1920) => (w ? `/media/img/${name}-${w}.webp` : `/media/img/${name}-640.jpg`);
 
 export const collectionOf = (slug: string) => collections.find((c) => c.slug === slug)!;
 export const productsIn = (slug: string) => products.filter((p) => p.collection === slug);
-export const fromPrice = (slug: string) => Math.min(...productsIn(slug).map((p) => p.price));
-
-// Stand-in photographs used outside the catalogue (hero, fitting steps).
-export const extraPhotos = [6766363, 6461169, 6766365, 7998238];
-export const allPhotoIds = Array.from(new Set([...products.map((p) => p.photo), ...extraPhotos]));
+export const productBySlug = (slug: string) => products.find((p) => p.slug === slug);

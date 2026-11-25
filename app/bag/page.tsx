@@ -3,7 +3,9 @@ import ShopChrome from "@/components/ShopChrome";
 import { BagView } from "@/components/BagView";
 
 export const metadata: Metadata = {
-  title: "Your bag: Avia Samara",
+  title: "Your bag",
+  robots: { index: false, follow: true },
+  alternates: { canonical: "/bag/" },
   description: "The Avia Samara pieces in your bag, with quantities and the subtotal.",
 };
 
