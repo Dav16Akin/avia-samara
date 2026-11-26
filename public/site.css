@@ -110,6 +110,15 @@ main > .hero--stage > .wrap { position: relative; z-index: 1; height: auto; disp
     linear-gradient(to top, rgb(13 12 11 / .92) 0%, rgb(13 12 11 / .8) 50%, rgb(13 12 11 / 0) 78%); }
   .stage__copy > h1 { font-size: clamp(34px, 10vw, 44px); }
   .stage__copy > .hero__kicker { display: none; }
+  /* a phone: the message centred on the film, under the centred logo, across and down */
+  main > section.hero--stage { padding-bottom: 16px; }
+  main > section.hero--stage > .wrap.wrap { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+  main > section.hero--stage > .wrap > .stage__copy { flex: none; height: auto; }
+  .stage__copy { text-align: center; margin-inline: auto; }
+  .stage__copy > h1, .stage__copy > .t-lead { margin-inline: auto; }
+  .stage__actions { justify-content: center; }
+  .stage__actions .btn-row { justify-content: center; }
+  .stage__copy .film-btn { text-align: left; }
   .stage__actions { margin-top: var(--s-5) !important; }
   .stage__actions > .btn-row { width: 100%; }
 }
@@ -495,7 +504,7 @@ main > #lookbook { height: auto; min-height: 0; padding: 0; position: relative; 
 }
 
 /* ================= the store film: a frame that opens to full bleed ================= */
-main > #film { height: auto; min-height: 0; padding: 0; background: #0b0b0c; color: #fff; scroll-margin-top: 0; }
+main > #store-film { height: auto; min-height: 0; padding: 0; background: #0b0b0c; color: #fff; scroll-margin-top: 0; }
 .filmband__frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #0b0b0c url(/media/video/store-tv-poster.webp) 50% 50% / cover no-repeat; }
 .filmband__frame > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .filmband__copy { padding-block: 40px 56px; display: grid; gap: 14px; justify-items: start; }
@@ -506,15 +515,18 @@ main > #film { height: auto; min-height: 0; padding: 0; background: #0b0b0c; col
 .filmband__copy .film-btn:hover .film-btn__disc { background: #fff; color: #0b0b0c; }
 .filmband__copy .film-btn__label small { color: rgb(255 255 255 / .7); }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  main > #film { height: 230vh; }
+  main > #store-film { height: 230vh; }
   .filmband__pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; }
   .filmband__frame { position: absolute; inset: 0; aspect-ratio: auto;
     clip-path: inset(calc((1 - var(--open, 0)) * 16%) calc((1 - var(--open, 0)) * 22%)); }
   .filmband__frame::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background: linear-gradient(to right, rgb(11 11 12 / .78) 0%, rgb(11 11 12 / .45) 28%, rgb(11 11 12 / 0) 46%); opacity: var(--open, 0); }
-  .filmband__copy { position: absolute; left: 0; right: 0; bottom: 12vh; padding: 0; max-width: var(--container);
+  .filmband__copy { position: absolute; left: 0; right: 0; bottom: 12%; padding: 0; max-width: var(--container);
     opacity: var(--open, 0); transform: translate3d(0, calc((1 - var(--open, 0)) * 40px), 0); }
   .filmband__copy > * { max-width: 420px; }
+  /* the copy spans the frame's width: only its words and button take clicks, so the sound button beside it works */
+  .filmband__copy { pointer-events: none; }
+  .filmband__copy > * { pointer-events: auto; }
 }
 
 /* ================= the piece page's photographs: views on the left, the main picture beside them ================= */
@@ -615,4 +627,16 @@ dialog.cart::backdrop { background: rgb(13 12 11 / .5); }
   .foot__main { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-block: 48px 40px; }
   .foot__main > .foot__col:last-child { grid-column: 1 / -1; }
   .foot__credit { margin-left: 0; flex-basis: 100%; }
+}
+
+/* the store film's sound button: bottom right of the frame, white on a dark glass */
+.filmband__sound { position: absolute; right: 24px; bottom: 24px; z-index: 2; display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 16px 0 14px; border: 1px solid rgb(255 255 255 / .4); border-radius: 22px; background: rgb(11 11 12 / .55);
+  color: #fff; font: 500 13px/1 var(--font-text); cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.filmband__sound:hover { background: rgb(11 11 12 / .8); border-color: #fff; }
+.filmband__sound:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.filmband__sound[aria-pressed="true"] { background: var(--brand-blue); border-color: var(--brand-blue); }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .filmband__sound { right: max(var(--gut), calc((100vw - var(--container)) / 2)); bottom: 12%; opacity: var(--open, 0); }
 }

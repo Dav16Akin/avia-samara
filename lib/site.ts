@@ -1,12 +1,8 @@
 import { phone, stores } from "@/lib/contact";
 
-// The site's public address. Set NEXT_PUBLIC_SITE_URL to the real domain (e.g. https://aviasamara.com) in
-// Vercel's environment variables; until then the build uses Vercel's own production address, and a local
-// build uses localhost. Every canonical link, the sitemap and the share image are built from it.
-export const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
-).replace(/\/+$/, "");
+// The site's public address: https://aviasamara.ng. Every canonical link, the sitemap and the share image
+// are built from it. NEXT_PUBLIC_SITE_URL overrides it (for a preview or a move to another domain).
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://aviasamara.ng").replace(/\/+$/, "");
 
 export const abs = (path: string) => `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
 

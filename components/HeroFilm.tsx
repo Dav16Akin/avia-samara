@@ -45,9 +45,14 @@ export function HeroFilm() {
 /* "Watch the film": the whole 1:56 welcome from the founders, with sound, loaded only on the click. */
 export function FilmButton({ compact = false }: { compact?: boolean }) {
   const open = () => {
-    const d = document.getElementById("film") as HTMLDialogElement | null;
+    // the dialog's own id (film-dialog): the store-film section must never share it, or the button finds
+    // the section instead and nothing plays
+    const d = document.getElementById("film-dialog") as HTMLDialogElement | null;
     const v = d?.querySelector("video");
     if (!d || !v) return;
+    // one sound at a time: the store film on the page pauses while the full film plays
+    document.querySelectorAll<HTMLVideoElement>(".filmband video").forEach((x) => x.pause());
+    v.volume = 0.6;
     if (!v.querySelector("source")) {
       v.innerHTML =
         '<source src="/media/video/film-hevc.mp4" type=\'video/mp4; codecs="hvc1"\'>' +
@@ -73,7 +78,7 @@ export function FilmButton({ compact = false }: { compact?: boolean }) {
 export function FilmDialog() {
   const close = (e: React.SyntheticEvent<HTMLDialogElement>) => e.currentTarget.querySelector("video")?.pause();
   return (
-    <dialog id="film" className="film-dialog" aria-label="The Avia Samara store film" onClose={close}
+    <dialog id="film-dialog" className="film-dialog" aria-label="The Avia Samara store film" onClose={close}
       onClick={(e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }}>
       <video controls playsInline preload="none" poster="/media/video/film-poster.webp" />
       <form method="dialog">
